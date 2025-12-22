@@ -1,3 +1,4 @@
+
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
@@ -33,7 +34,11 @@ export default defineConfig({
   use: {
     /* ✅ THIS IS THE IMPORTANT FIX */
     baseURL: process.env.BASE_URL,
+
     storageState: "auth.json",
+
+    // storageState: "auth.json",
+
     /* Collect trace when retrying the failed test */
     trace: "on-first-retry",
   },
