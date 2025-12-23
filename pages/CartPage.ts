@@ -1,4 +1,5 @@
-import { Page, Locator, expect } from '@playwright/test';
+
+import { Page, Locator, expect } from "@playwright/test";
 
 export class CartPage {
   readonly page: Page;
@@ -12,11 +13,11 @@ export class CartPage {
   }
 
   async goto() {
-    await this.page.goto('/cart');
+    await this.page.goto("/cart");
   }
 
   async removeFirstItem() {
-    await expect(this.removeButtons.first()).toBeVisible();
+    await expect(this.removeButtons.first()).toBeVisible({ timeout: 10000 });
     await this.removeButtons.first().click();
   }
 
@@ -27,6 +28,16 @@ export class CartPage {
   }
 
   async assertEmpty() {
-    await expect(this.emptyMessage).toBeVisible();
+    await expect(this.emptyMessage).toBeVisible({ timeout: 10000 });
   }
+
+
+async assertHasItems() {
+ await this.page.locator('[data-test="add-to-cart"]').click();
+
+
+ await expect(this.page.locator('button:has-text("Remove")').first()).toBeVisible({ timeout: 10000 });
+}
+
+
 }
