@@ -1,144 +1,166 @@
+
 import { Page, Locator, expect } from "@playwright/test";
 
 export class ProductsPage {
   readonly page: Page;
 
-  // Common
   readonly searchInput: Locator;
   readonly sortSelect: Locator;
   readonly productCards: Locator;
   readonly productPrices: Locator;
-
-  // Price range (Slider)
-  readonly priceSliders: Locator; //zaina
+  readonly priceSliders: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
     this.searchInput = page.locator('input[placeholder="Search"]');
     this.sortSelect = page.locator("select");
-
     this.productCards = page.locator(".card");
     this.productPrices = page.locator(".card .price");
-
-    // Price range sliders
-    this.priceSliders = page.getByRole("slider"); //zaina
+    this.priceSliders = page.getByRole("slider");
   }
 
-  // ===============================
-  // NAVIGATION
-  // ===============================
-
+  // ---------------- NAVIGATION ----------------
   async goto() {
     await this.page.goto("/");
+    await this.page.waitForLoadState("networkidle");
   }
 
   async openFirstProduct() {
     await this.productCards.first().click();
+    await this.page.waitForLoadState("networkidle");
+  }
+   async openCart() {
+  await this.page.goto("/cart");
+  await this.page.waitForLoadState("networkidle");
+}
+
+  // ---------------- CART ----------------
+
+async gotoHome() {
+    await this.page.goto('/');
   }
 
-  async openCart() {
-    await this.page.goto("/cart");
+async addFirstProductToCart(): Promise<string> {
+  await this.page.goto('/');
+
+  const firstHeading = this.page.getByRole('heading', { level: 5 }).first();
+  await firstHeading.waitFor({ state: 'visible', timeout: 10000 });
+
+  const rawName = await firstHeading.textContent();
+  const productName = rawName ? rawName.trim() : 'Unknown Product';
+
+  await firstHeading.click();
+  await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+
+ 
+  let addButton = this.page.getByRole('button', { name: /Add to cart/i }).first();
+  if (await addButton.count() === 0) {
+    
+    addButton = this.page.locator('[data-test="add-to-cart"], #btn-add-to-cart').first();
   }
 
-  // ===============================
-  // CART
-  // ===============================
+  await expect(addButton).toBeVisible({ timeout: 15000 });
+  await addButton.click();
 
-  async addToCartFromProductDetails() {
-    await this.page.locator('button:has-text("Add to cart")').click();
-  }
+  
+  const alert = this.page.getByRole('alert');
+  await expect(alert).toBeVisible({ timeout: 10000 });
 
-  // ===============================
-  // SEARCH & SORT
-  // ===============================
+  return productName;
+}
 
+  // ---------------- SEARCH & SORT ----------------
   async search(text: string) {
     await this.searchInput.fill(text);
     await this.searchInput.press("Enter");
+    await this.page.waitForLoadState("networkidle");
   }
 
   async sortAZ() {
     await this.sortSelect.selectOption({ value: "name,asc" });
+    await this.page.waitForTimeout(1000); 
   }
 
   async sortPriceHighToLow() {
     await this.sortSelect.selectOption({ value: "price,desc" });
+    await this.page.waitForTimeout(1000);
   }
 
-  // ===============================
-  // FILTERS
-  // ===============================
-
-  // Category
+  // ---------------- FILTERS ----------------
   async filterByCategory(categoryName: string) {
-    await this.page
-      .locator(`label:has-text("${categoryName}") input[type="checkbox"]`)
-      .check();
+    const checkbox = this.page.locator(`label:has-text("${categoryName}") input[type="checkbox"]`);
+    await checkbox.check();
+    await this.page.waitForTimeout(1000); 
   }
 
-  //------------------------------------------------------------------------------------
-  // Brand //zaina
   async filterByBrand(brandName: string) {
-    await this.page
-      .locator(`label:has-text("${brandName}") input[type="checkbox"]`)
-      .check();
+    const checkbox = this.page.locator(`label:has-text("${brandName}") input[type="checkbox"]`);
+    await checkbox.check();
+    await this.page.waitForTimeout(1000);
   }
-  // ===============================
-  // PRICE RANGE // zaina
-  // ===============================
 
-  // Generic slider movement
   async filterByPriceRangeSteps(minSteps: number, maxSteps: number) {
     await expect(this.priceSliders).toHaveCount(2);
 
-    const minSlider = this.priceSliders.nth(0); // min price
-    const maxSlider = this.priceSliders.nth(1); // max price
+    const minSlider = this.priceSliders.nth(0);
+    const maxSlider = this.priceSliders.nth(1);
 
     await minSlider.focus();
-    for (let i = 0; i < minSteps; i++) {
-      await this.page.keyboard.press("ArrowRight");
-    }
+    for (let i = 0; i < minSteps; i++) await this.page.keyboard.press("ArrowRight");
 
     await maxSlider.focus();
-    for (let i = 0; i < maxSteps; i++) {
-      await this.page.keyboard.press("ArrowLeft");
-    }
+    for (let i = 0; i < maxSteps; i++) await this.page.keyboard.press("ArrowLeft");
+
+    await this.page.waitForTimeout(500);
   }
 
-  // Medium range
   async filterByMediumPriceRange() {
     await this.filterByPriceRangeSteps(15, 15);
   }
 
-  // Narrow range
   async filterByNarrowPriceRange() {
     await this.filterByPriceRangeSteps(30, 30);
   }
 
-  // ===============================
-  // ASSERTIONS
-  // ===============================
-
+  // ---------------- ASSERTIONS ----------------
   async assertHasResults() {
-    await expect(this.productCards.first()).toBeVisible();
+    await expect(this.productCards.first()).toBeVisible({ timeout: 10000 });
   }
 
   async assertPricesWithinRange(min: number, max: number) {
     const prices = await this.productPrices.allTextContents();
-
     for (const priceText of prices) {
-      const price = Number(priceText.replace("$", ""));
+      const price = Number(priceText.replace("$", "").trim());
       expect(price).toBeGreaterThanOrEqual(min);
       expect(price).toBeLessThanOrEqual(max);
     }
   }
 
-  // ===============================
-  // UTILITIES
-  // ===============================
+  // ---------------- SORT RESTORE ----------------
+  async restoreSort() {
+    await this.page.evaluate(() => {
+      const sort = localStorage.getItem("sort");
+      const select = document.querySelector("select") as HTMLSelectElement;
+      if (!select) return;
 
+      if (sort === "az") {
+        select.value = "name,asc";
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      if (sort === "price-desc") {
+        select.value = "price,desc";
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    });
+
+    await this.page.waitForTimeout(1000); 
+  }
+
+  // ---------------- UTILITIES ----------------
   async clearFilters() {
     await this.page.reload();
+    await this.page.waitForLoadState("networkidle");
   }
 }
+
