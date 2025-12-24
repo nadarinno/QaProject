@@ -33,9 +33,10 @@ export class ProductsPage {
     await this.page.goto("/");
   }
 
-  async openFirstProduct() {
-    await this.productCards.first().click();
-  }
+ async openFirstProduct() {
+  await expect(this.productCards.first()).toBeVisible();
+  await this.productCards.first().click();
+}
 
   async openCart() {
     await this.page.goto("/cart");
@@ -45,9 +46,14 @@ export class ProductsPage {
   // CART
   // ===============================
 
-  async addToCartFromProductDetails() {
-    await this.page.locator('button:has-text("Add to cart")').click();
-  }
+async addToCartFromProductDetails() {
+  await this.page
+    .locator('button', { hasText: 'Add to cart' })
+    .first()
+    .click();
+}
+
+
 
   // ===============================
   // SEARCH & SORT
@@ -72,10 +78,12 @@ export class ProductsPage {
 
   // Category
   async filterByCategory(categoryName: string) {
-    await this.page
-      .locator(`label:has-text("${categoryName}") input[type="checkbox"]`)
-      .check();
-  }
+  await this.page
+    .locator('label', { hasText: categoryName })
+    .locator('input[type="checkbox"]')
+    .check();
+}
+
 
   //------------------------------------------------------------------------------------
   // Brand //zaina

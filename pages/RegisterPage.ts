@@ -2,11 +2,12 @@ import { Page, Locator, expect } from '@playwright/test';
 
 export class RegisterPage {
   readonly page: Page;
+
   readonly firstName: Locator;
   readonly lastName: Locator;
   readonly dob: Locator;
-  readonly address: Locator;
-  readonly postcode: Locator;
+  readonly street: Locator;
+  readonly postalCode: Locator;
   readonly city: Locator;
   readonly state: Locator;
   readonly country: Locator;
@@ -18,56 +19,43 @@ export class RegisterPage {
   constructor(page: Page) {
     this.page = page;
 
-    this.firstName = page.locator('#first_name');
-    this.lastName = page.locator('#last_name');
-    this.dob = page.locator('#dob');
-    this.address = page.locator('#address');
-    this.postcode = page.locator('#postcode');
-    this.city = page.locator('#city');
-    this.state = page.locator('#state');
-    this.country = page.locator('#country');
-    this.phone = page.locator('#phone');
-    this.email = page.locator('#email');
-    this.password = page.locator('#password');
-
-    this.registerBtn = page.locator('button[type="submit"]');
+    this.firstName = page.getByPlaceholder('First name');
+    this.lastName = page.getByPlaceholder('Your last name');
+    this.dob = page.getByPlaceholder('YYYY-MM-DD');
+    this.street = page.getByPlaceholder('Your Street');
+    this.postalCode = page.getByPlaceholder('Your Postcode');
+    this.city = page.getByPlaceholder('Your City');
+    this.state = page.getByPlaceholder('Your State');
+    this.country = page.locator('select');
+    this.phone = page.getByPlaceholder('Your phone');
+    this.email = page.getByPlaceholder('Your email');
+    this.password = page.getByPlaceholder('Your password');
+    this.registerBtn = page.getByRole('button', { name: 'Register' });
   }
 
   async goto() {
     await this.page.goto('/auth/register');
   }
 
-  async register(data: {
-    firstName: string;
-    lastName: string;
-    dob: string; 
-    address: string;
-    postcode: string;
-    city: string;
-    state: string;
-    country: string;
-    phone: string;
-    email: string;
-    password: string;
-  }) {
+  async register(user: any) {
     await this.goto();
 
-    await this.firstName.fill(data.firstName);
-    await this.lastName.fill(data.lastName);
-    await this.dob.fill(data.dob);
-    await this.address.fill(data.address);
-    await this.postcode.fill(data.postcode);
-    await this.city.fill(data.city);
-    await this.state.fill(data.state);
-    await this.country.fill(data.country);
-    await this.phone.fill(data.phone);
-    await this.email.fill(data.email);
-    await this.password.fill(data.password);
+    await this.firstName.fill(user.firstName);
+    await this.lastName.fill(user.lastName);
+    await this.dob.fill(user.dob);
+    await this.street.fill(user.street);
+    await this.postalCode.fill(user.postcode);
+    await this.city.fill(user.city);
+    await this.state.fill(user.state);
+    await this.country.selectOption({ label: user.country });
+    await this.phone.fill(user.phone);
+    await this.email.fill(user.email);
+    await this.password.fill(user.password);
 
     await this.registerBtn.click();
   }
 
-  async assertRegisterSuccess() {
-    await expect(this.page).toHaveURL(/auth\/login|\/$/);
+  async assertRegistered() {
+    await expect(this.page).toHaveURL(/login|account/);
   }
 }

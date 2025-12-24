@@ -2,13 +2,11 @@ import { Page, Locator, expect } from '@playwright/test';
 
 export class CartPage {
   readonly page: Page;
-  readonly removeButtons: Locator;
-  readonly emptyMessage: Locator;
+  readonly cartItems: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.removeButtons = page.locator('button:has-text("Remove")');
-    this.emptyMessage = page.locator('text=Your cart is empty');
+    this.cartItems = page.locator('.cart-item');
   }
 
   async goto() {
@@ -16,17 +14,12 @@ export class CartPage {
   }
 
   async removeFirstItem() {
-    await expect(this.removeButtons.first()).toBeVisible();
-    await this.removeButtons.first().click();
-  }
-
-  async removeAllItems() {
-    while (await this.removeButtons.count()) {
-      await this.removeButtons.first().click();
-    }
+    const item = this.cartItems.first();
+    await expect(item).toBeVisible();
+    await item.locator('button.btn-danger').click();
   }
 
   async assertEmpty() {
-    await expect(this.emptyMessage).toBeVisible();
+    await expect(this.page.getByText('Continue Shopping')).toBeVisible();
   }
 }
