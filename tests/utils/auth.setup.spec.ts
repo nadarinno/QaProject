@@ -5,17 +5,17 @@ import { LoginPage } from '../../pages/LoginPage';
 setup('login once and seed state', async ({ page }) => {
   const loginPage = new LoginPage(page);
 
-  // 1️⃣ Login (cookies)
+  //  Login (cookies)
   await loginPage.login(
     process.env.EMAIL!,
     process.env.PASSWORD!
   );
 
-  // 2️⃣ Go to products page (important!)
+  // go to products page 
   await page.goto('https://practicesoftwaretesting.com/');
   await page.waitForLoadState('networkidle');
 
-  // 3️⃣ Seed localStorage (cart + sort)
+  // Seed localStorage (cart + sort)
   await page.evaluate(() => {
     localStorage.setItem(
       'cart',
@@ -24,6 +24,6 @@ setup('login once and seed state', async ({ page }) => {
     localStorage.setItem('sort', 'az');
   });
 
-  // 4️⃣ Save storage state (cookies + localStorage)
+  // Save storage state (cookies + localStorage)
   await page.context().storageState({ path: 'auth.json' });
 });
