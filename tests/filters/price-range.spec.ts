@@ -6,7 +6,7 @@ test.describe("Filter by Price Range", () => {
     await page.goto("/");
   });
 
-  // 🔵 Range متوسط
+  
   test("User can filter products by medium price range", async ({ page }) => {
     const productsPage = new ProductsPage(page);
 
@@ -14,7 +14,6 @@ test.describe("Filter by Price Range", () => {
     await productsPage.assertHasResults();
   });
 
-  // 🔵 التحقق من الأسعار ضمن حدود الموقع
   test("All products prices are within allowed price range", async ({
     page,
   }) => {
@@ -24,7 +23,6 @@ test.describe("Filter by Price Range", () => {
     await productsPage.assertPricesWithinRange(1, 200);
   });
 
-  // 🔴 Range ضيق
   test("User can filter products using narrow price range", async ({
     page,
   }) => {
