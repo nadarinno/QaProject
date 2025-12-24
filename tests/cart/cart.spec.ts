@@ -1,16 +1,12 @@
 import { test } from '@playwright/test';
 import { ProductsPage } from '../../pages/ProductsPage';
+import { CartPage } from '../../pages/CartPage';
 
-test.describe('Cart Feature', () => {
+test('User can add product to cart', async ({ page }) => {
+  const productsPage = new ProductsPage(page);
+  const cartPage = new CartPage(page);
 
-  test('User can add product to cart', async ({ page }) => {
-    const productsPage = new ProductsPage(page);
-
-    // 👇 هاي الثلاثة لازم يكونوا داخل test
-    await productsPage.goto();
-    await productsPage.openFirstProduct();
-    await productsPage.addToCartFromProductDetails();
-    await productsPage.openCart();
-  });
-
+  await productsPage.addFirstProductToCart();
+  await cartPage.goto();
+  await cartPage.assertHasItems();
 });

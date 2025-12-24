@@ -25,7 +25,7 @@ export default defineConfig({
   reporter: "html",
 
   use: {
-    baseURL: process.env.BASE_URL,
+    baseURL: 'https://practicesoftwaretesting.com',
     trace: "on-first-retry",
   },
 
@@ -38,6 +38,7 @@ export default defineConfig({
     //   name: "firefox",
     //   use: { ...devices["Desktop Firefox"] },
     // },
+
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },

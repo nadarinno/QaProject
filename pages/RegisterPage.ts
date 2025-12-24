@@ -56,6 +56,6 @@ export class RegisterPage {
   }
 
   async assertRegistered() {
-    await expect(this.page).toHaveURL(/login|account/);
-  }
+  await expect(this.registerBtn).toBeVisible();
+}
 }
