@@ -1,3 +1,4 @@
+
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
@@ -25,23 +26,35 @@ export default defineConfig({
   reporter: "html",
 
   use: {
+
     baseURL: 'https://practicesoftwaretesting.com',
+
+    /* ✅ THIS IS THE IMPORTANT FIX */
+    baseURL: process.env.BASE_URL,
+
+    storageState: "auth.json",
+
+    // storageState: "auth.json",
+
+    /* Collect trace when retrying the failed test */
+
     trace: "on-first-retry",
   },
 
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+
+      use: { ...devices["Desktop Chrome"],headless: false },
     },
     // {
     //   name: "firefox",
-    //   use: { ...devices["Desktop Firefox"] },
+    //   use: { ...devices["Desktop Firefox"] ,headless: false},
     // },
 
     {
       name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      use: { ...devices["Desktop Safari"] ,headless: false},
     },
   ],
 });
@@ -53,4 +66,6 @@ export default defineConfig({
   //   url: 'http://localhost:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
+
+
 

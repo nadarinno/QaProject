@@ -2,6 +2,12 @@
 import { Page, Locator, expect } from "@playwright/test";
 
 export class ProductsPage {
+  addFirstProductToCart() {
+    throw new Error('Method not implemented.');
+  }
+  gotoHome() {
+    throw new Error('Method not implemented.');
+  }
   readonly page: Page;
 
   readonly searchInput: Locator;
@@ -23,53 +29,28 @@ export class ProductsPage {
   // ---------------- NAVIGATION ----------------
   async goto() {
     await this.page.goto("/");
-    await this.page.waitForLoadState("networkidle");
   }
 
- async acceptCookiesIfAny() {
-  const acceptBtn = this.page.getByRole('button', { name: /accept/i });
-  if (await acceptBtn.count()) {
-    await acceptBtn.first().click();
-  }
-}
-
-
-   async openCart() {
-  await this.page.goto("/cart");
-  await this.page.waitForLoadState("networkidle");
-}
-
-  // ---------------- CART ----------------
-
-async gotoHome() {
-    await this.page.goto('/');
+  async openFirstProduct() {
+    await this.productCards.first().click();
   }
 
- async addFirstProductToCart(): Promise<void> {
-  await this.goto();
-  await this.acceptCookiesIfAny();
+  async openCart() {
+    await this.page.goto("/cart");
+  }
 
-  // أول كارد
-  const firstCard = this.productCards.first();
-  await expect(firstCard).toBeVisible({ timeout: 15000 });
+  // ===============================
+  // CART
+  // ===============================
 
-  await firstCard.click();
+  async addToCartFromProductDetails() {
+    await this.page.locator('button:has-text("Add to cart")').click();
+  }
 
-  // انتظري URL صفحة المنتج
-  await this.page.waitForURL(/\/product\/.+/, { timeout: 15000 });
+  // ===============================
+  // SEARCH & SORT
+  // ===============================
 
-  // زر Add to cart
-  const addToCartButton = this.page.getByRole('button', { name: /add to cart/i });
-  await expect(addToCartButton).toBeVisible({ timeout: 15000 });
-  await addToCartButton.click();
-
-  // رسالة النجاح
-  await expect(this.page.getByRole('alert')).toBeVisible({ timeout: 15000 });
-}
-
-
-
-  // ---------------- SEARCH & SORT ----------------
   async search(text: string) {
     await this.searchInput.fill(text);
     await this.searchInput.press("Enter");

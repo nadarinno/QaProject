@@ -1,4 +1,5 @@
-import { Page, Locator, expect } from '@playwright/test';
+
+import { Page, Locator, expect } from "@playwright/test";
 
 export class CartPage {
   readonly page: Page;
@@ -19,6 +20,7 @@ export class CartPage {
   }
 
   async goto() {
+
     await this.page.goto('/cart');
     await this.page.waitForLoadState('domcontentloaded');
   }
@@ -30,10 +32,12 @@ export class CartPage {
 
   async removeFirstItem() {
     await expect(this.removeButtons.first()).toBeVisible({ timeout: 15000 });
+
     await this.removeButtons.first().click();
   }
 
   async assertEmpty() {
+
     await expect(this.emptyMessage).toBeVisible({ timeout: 15000 });
-  }
-}
+
+  }}
