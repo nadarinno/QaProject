@@ -6,7 +6,7 @@ test.describe("Filter by Brand", () => {
     await page.goto("/");
   });
 
-  // ✅ Existing test
+ 
   test("User can filter products by brand", async ({ page }) => {
     const productsPage = new ProductsPage(page);
 
@@ -14,7 +14,7 @@ test.describe("Filter by Brand", () => {
     await productsPage.assertHasResults();
   });
 
-  // 🟡 BONUS: Brand ثاني
+ 
   test("User can filter by another brand", async ({ page }) => {
     const productsPage = new ProductsPage(page);
 
@@ -22,7 +22,7 @@ test.describe("Filter by Brand", () => {
     await productsPage.assertHasResults();
   });
 
-  // 🟡 BONUS: أكثر من Brand
+  
   test("User can filter by multiple brands", async ({ page }) => {
     const productsPage = new ProductsPage(page);
 
@@ -31,7 +31,7 @@ test.describe("Filter by Brand", () => {
     await productsPage.assertHasResults();
   });
 
-  // 🟡 BONUS: إزالة الفلتر
+  
   test("User can remove brand filter", async ({ page }) => {
     const productsPage = new ProductsPage(page);
 
