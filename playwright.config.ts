@@ -1,4 +1,3 @@
-
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
@@ -47,7 +46,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"],headless: false },
+      use: { ...devices["Desktop Chrome"], headless: false },
     },
     // {
     //   name: "firefox",
@@ -55,7 +54,7 @@ export default defineConfig({
     // },
     {
       name: "webkit",
-      use: { ...devices["Desktop Safari"] ,headless: false},
+      use: { ...devices["Desktop Safari"], headless: false },
     },
   ],
 
